@@ -29,10 +29,7 @@ namespace DocumentRepositoryApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            Mapper.Initialize(cfg =>
-            {
-                cfg.AddProfile<AutoMapperProfile>();
-            });
+            InitializeMapper();
 
             services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IDocumentContentService, DocumentContentService>();
@@ -51,6 +48,16 @@ namespace DocumentRepositoryApi
             }
 
             app.UseMvc();
+        }
+
+        public void InitializeMapper()
+        {
+            Mapper.Reset();
+            Mapper.Initialize(cfg =>
+            {
+                cfg.AddProfile<AutoMapperProfile>();
+            });
+
         }
 
         public virtual void ConfigureDatabase(IServiceCollection services, IConfigurationRoot config)

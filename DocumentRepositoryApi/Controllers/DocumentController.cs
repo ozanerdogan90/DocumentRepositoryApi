@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using DocumentRepositoryApi.DataAccess.Repositories;
 using DocumentRepositoryApi.Models;
@@ -19,7 +20,6 @@ namespace DocumentRepositoryApi.Controllers
             _service = service;
         }
 
-        //// TODO: not guid id 
         [HttpGet("{id}", Name = "Get")]
         public async Task<IActionResult> Get([NotEmptyGuid]Guid id)
         {
@@ -30,6 +30,7 @@ namespace DocumentRepositoryApi.Controllers
             return Ok(doc);
         }
 
+        //// todo hal doc
         [HttpPost]
         public async Task<IActionResult> Post([BindRequired, FromBody] Document document)
         {
@@ -44,9 +45,11 @@ namespace DocumentRepositoryApi.Controllers
             if (doc == null)
                 return NotFound();
 
-            await _service.Update(id, document);
+            var updated = await _service.Update(id, document);
+            if (!updated)
+                return StatusCode((int)HttpStatusCode.InternalServerError);
 
-            return Ok();
+            return Ok(document);
         }
 
         [HttpDelete("{id}")]

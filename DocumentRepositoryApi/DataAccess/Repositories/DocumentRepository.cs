@@ -40,15 +40,15 @@ namespace DocumentRepositoryApi.DataAccess.Repositories
 
         public async Task<Document> Get(Guid id)
         {
-            return await _context.Documents.FindAsync(id);
+            return await _context.Documents.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<List<Document>> GetAll(string owner = "")
         {
             if (string.IsNullOrEmpty(owner))
-                return await _context.Documents.ToListAsync();
+                return await _context.Documents.AsNoTracking().ToListAsync();
 
-            return await _context.Documents.Where(x => x.Owner.Equals(owner, StringComparison.InvariantCultureIgnoreCase)).ToListAsync();
+            return await _context.Documents.AsNoTracking().Where(x => x.Owner.Equals(owner, StringComparison.InvariantCultureIgnoreCase)).ToListAsync();
         }
 
         public async Task<bool> Update(Document document)

@@ -26,14 +26,35 @@ namespace DocumentRepositoryApi.IntegrationTests.Controllers
         }
 
         [Fact]
-        public async Task Get_WhenEmptyDocumentIdSent_ThenThrowsError()
+        public async Task Get_WhenEmptyDocumentIdSent_ThenReturnsBadRequest()
         {
             var expected = await httpClient.GetAsync($"/documents/{Guid.Empty}");
             expected.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }
 
         [Fact]
-        public async Task Post_WhenEmptyPayloadSent_ThenThrowsError()
+        public async Task Get_WhenInvalidDocumentIdSent_ThenReturnsNotFound()
+        {
+            var expected = await httpClient.GetAsync($"/documents/{Guid.NewGuid()}");
+            expected.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+        }
+
+        [Fact]
+        public async Task Get_WhenIdExist_ThenReturnsDocument()
+        {
+            var id = await AddNewDocument();
+            var expected = await httpClient.GetAsync($"/documents/{id}");
+            expected.StatusCode.Should().Be((int)HttpStatusCode.OK);
+
+            var entity = await expected.Content.ReadAsAsync<Document>();
+            entity.Should().NotBeNull();
+            entity.Name.Should().NotBeEmpty();
+            entity.Title.Should().NotBeEmpty();
+            entity.Version.Should().NotBeEmpty();
+        }
+
+        [Fact]
+        public async Task Post_WhenEmptyPayloadSent_ThenReturnsBadRequest()
         {
             var expected = await httpClient.PostAsJsonAsync<Document>("/documents", null);
             expected.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
@@ -42,12 +63,12 @@ namespace DocumentRepositoryApi.IntegrationTests.Controllers
         [Fact]
         public async Task Post_WhenSuccessfulyInserted_ThenCreatesEntity()
         {
-            var expected = await httpClient.PostAsJsonAsync<Document>("/documents", DocumentHelper.ValidDocument);
-            expected.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+            Guid expected = await AddNewDocument();
+            expected.Should().NotBe(Guid.Empty);
         }
 
         [Fact]
-        public async Task Put_WhenEmptyPayloadSent_ThenThrowsError()
+        public async Task Put_WhenEmptyPayloadSent_ThenReturnsBadRequest()
         {
             var expected = await httpClient.PutAsJsonAsync<Document>($"/documents/{Guid.NewGuid()}", null);
             expected.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
@@ -55,17 +76,51 @@ namespace DocumentRepositoryApi.IntegrationTests.Controllers
 
 
         [Fact]
-        public async Task Put_WhenEmptyDocumentIdSent_ThenThrowsError()
+        public async Task Put_WhenEmptyDocumentIdSent_ThenReturnsBadRequest()
         {
             var expected = await httpClient.PutAsJsonAsync<Document>($"/documents/{Guid.Empty}", DocumentHelper.ValidDocument);
             expected.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }
 
         [Fact]
-        public async Task Delete_WhenEmptyDocumentIdSent_ThenThrowsError()
+        public async Task Put_WhenIdExist_ThenUpdatesDocument()
+        {
+            var id = await AddNewDocument();
+            var expected = await httpClient.PutAsJsonAsync<Document>($"/documents/{id}", DocumentHelper.ValidDocumentUpdate);
+            expected.StatusCode.Should().Be((int)HttpStatusCode.OK);
+
+            var entity = await expected.Content.ReadAsAsync<Document>();
+            entity.Should().NotBeNull();
+            entity.Name.Should().Be(DocumentHelper.ValidDocumentUpdate.Name);
+            entity.Version.Should().NotBeEmpty();
+        }
+
+        [Fact]
+        public async Task Delete_WhenEmptyDocumentIdSent_ThenReturnsBadRequest()
         {
             var expected = await httpClient.DeleteAsync($"/documents/{Guid.Empty}");
             expected.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }
+
+        [Fact]
+        public async Task Delete_WhenExecutedSuccessfuly_ThenDeletesFile()
+        {
+            var id = await AddNewDocument();
+            var expected = await httpClient.DeleteAsync($"/documents/{id}");
+            expected.StatusCode.Should().Be((int)HttpStatusCode.OK);
+
+            var doc = await httpClient.GetAsync($"/documents/{id}");
+            doc.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+        }
+
+
+        private async Task<Guid> AddNewDocument()
+        {
+            var response = await httpClient.PostAsJsonAsync<Document>("/documents", DocumentHelper.ValidDocument);
+            response.StatusCode.Should().Be((int)HttpStatusCode.Created);
+
+            return await response.Content.ReadAsAsync<Guid>();
+        }
+
     }
 }

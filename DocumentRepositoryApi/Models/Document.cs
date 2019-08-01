@@ -9,7 +9,7 @@ namespace DocumentRepositoryApi.Models
     public class Document
     {
         [Required(AllowEmptyStrings = false)]
-        public string DocumentName { get; set; }
+        public string Name { get; set; }
         [Required(AllowEmptyStrings = false)]
         public string Title { get; set; }
         [Required(AllowEmptyStrings = false)]

@@ -11,9 +11,23 @@ namespace DocumentRepositoryApi.IntegrationTests.Helpers.Models
                 return new Document()
                 {
                     Description = "integration test document",
-                    DocumentName = "doc1",
+                    Name = "doc1",
                     Title = "title1",
                     Version = "1.0"
+                };
+            }
+        }
+
+        public static Document ValidDocumentUpdate
+        {
+            get
+            {
+                return new Document()
+                {
+                    Description = "new file",
+                    Name = "new document",
+                    Title = "new title",
+                    Version = "1.1"
                 };
             }
         }
