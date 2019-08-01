@@ -11,7 +11,16 @@ namespace DocumentRepositoryApi.Services
         Task<object> Get(Guid documentId);
     }
 
-    public class DocumentContentService
+    public class DocumentContentService : IDocumentContentService
     {
+        public Task<object> Get(Guid documentId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<Guid>> GetLinks(Guid documentId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DocumentRepositoryApi.Controllers
 {
-    [Route("documents/:documentId/contents")]
+    [Route("documents/{documentId}/contents")]
     [ApiController]
     public class DocumentContentController : ControllerBase
     {
@@ -31,7 +31,7 @@ namespace DocumentRepositoryApi.Controllers
             return Ok(links);
         }
 
-        [HttpGet("{}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> Get([BindRequired]Guid documentId, [BindRequired]Guid id)
         {
             var doc = await _documentService.Get(documentId);

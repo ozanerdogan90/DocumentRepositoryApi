@@ -21,7 +21,7 @@ namespace DocumentRepositoryApi.Controllers
 
         //// TODO: not guid id 
         [HttpGet("{id}", Name = "Get")]
-        public async Task<IActionResult> Get([BindRequired]Guid id)
+        public async Task<IActionResult> Get([NotEmptyGuid]Guid id)
         {
             var doc = await _service.Get(id);
             if (doc == null)
@@ -38,7 +38,7 @@ namespace DocumentRepositoryApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put([BindRequired]Guid id, [BindRequired, FromBody] Document document)
+        public async Task<IActionResult> Put([NotEmptyGuid]Guid id, [BindRequired, FromBody] Document document)
         {
             var doc = await _service.Get(id);
             if (doc == null)
@@ -50,7 +50,7 @@ namespace DocumentRepositoryApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete([BindRequired]Guid id)
+        public async Task<IActionResult> Delete([NotEmptyGuid]Guid id)
         {
             await _service.Delete(id);
             return Ok();
