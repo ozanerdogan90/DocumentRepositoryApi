@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DocumentRepositoryApi.DataAccess.Repositories;
 using DocumentRepositoryApi.Models;
 using DocumentRepositoryApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
@@ -12,6 +13,7 @@ namespace DocumentRepositoryApi.Controllers
 {
     [Route("documents")]
     [ApiController]
+    [Authorize]
     public class DocumentController : ControllerBase
     {
         private readonly IDocumentService _service;
@@ -35,7 +37,7 @@ namespace DocumentRepositoryApi.Controllers
         public async Task<IActionResult> Post([BindRequired, FromBody] Document document)
         {
             var id = await _service.Add(document);
-            return Created("", id);
+            return CreatedAtAction(nameof(Get), new { id }, id);
         }
 
         [HttpPut("{id}")]

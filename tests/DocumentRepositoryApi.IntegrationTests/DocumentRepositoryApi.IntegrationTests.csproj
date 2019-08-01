@@ -37,4 +37,14 @@
     <ProjectReference Include="..\..\DocumentRepositoryApi\DocumentRepositoryApi.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Helpers\Contents\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Helpers\Contents\logo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

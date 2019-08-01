@@ -1,13 +1,19 @@
-﻿using DocumentRepositoryApi.Services;
+﻿using DocumentRepositoryApi.Models;
+using DocumentRepositoryApi.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
+using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace DocumentRepositoryApi.Controllers
 {
     [Route("documents/{documentId}/contents")]
     [ApiController]
+    [Authorize]
     public class DocumentContentController : ControllerBase
     {
         private readonly IDocumentService _documentService;
@@ -18,29 +24,29 @@ namespace DocumentRepositoryApi.Controllers
             _contentService = contentService;
         }
 
-        //// TODO: not guid id 
-        [HttpGet("links")]
-        public async Task<IActionResult> Get([BindRequired]Guid documentId)
+        [HttpGet]
+        public async Task<IActionResult> Get([NotEmptyGuid]Guid documentId)
         {
             var doc = await _documentService.Get(documentId);
             if (doc == null)
                 return NotFound();
 
-            var links = await _contentService.GetLinks(documentId);
+            var file = await _contentService.Get(documentId);
 
-            return Ok(links);
+            return File(file.Content, file.ContentType, file.Name);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get([BindRequired]Guid documentId, [BindRequired]Guid id)
+        public async Task<IActionResult> Post([NotEmptyGuid]Guid documentId, IFormFile file)
         {
             var doc = await _documentService.Get(documentId);
             if (doc == null)
-                return NotFound();
+                return BadRequest($"Document with id:{documentId} doesnt exist");
 
-            var file = await _contentService.Get(id);
+            var result = await _contentService.Store(documentId, file);
+            if (!result)
+                return StatusCode((int)HttpStatusCode.InternalServerError);
 
-            return Ok(file);
+            return Ok();
         }
     }
 }

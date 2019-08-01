@@ -12,12 +12,13 @@ namespace DocumentRepositoryApi.DataAccess
     public class DocumentContext : DbContext
     {
         public DbSet<Document> Documents { get; set; }
+        public DbSet<User> Users { get; set; }
 
         public DocumentContext(DbContextOptions<DocumentContext> options)
        : base(options)
         {
         }
-    
+
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default(CancellationToken))
         {
             ChangeTracker.DetectChanges();

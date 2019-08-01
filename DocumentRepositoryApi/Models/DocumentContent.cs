@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DocumentRepositoryApi.DataAccess.Entities
+namespace DocumentRepositoryApi.Models
 {
     public class DocumentContent
     {
-        public Guid DocumentId { get; set; }
         public string Name { get; set; }
-        public int Length { get; set; }
-        public string Type { get; set; }
+        public string ContentType { get; set; }
         public byte[] Content { get; set; }
     }
 }

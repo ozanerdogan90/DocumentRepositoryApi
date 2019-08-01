@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DocumentRepositoryApi.Models;
 using DocumentEntity = DocumentRepositoryApi.DataAccess.Entities.Document;
+using UserEntity = DocumentRepositoryApi.DataAccess.Entities.User;
 namespace DocumentRepositoryApi
 {
     public class AutoMapperProfile : Profile
@@ -9,6 +10,8 @@ namespace DocumentRepositoryApi
         {
             CreateMap<Document, DocumentEntity>();
             CreateMap<DocumentEntity, Document>();
+            CreateMap<User, UserEntity>();
+            CreateMap<UserEntity, User>();
         }
     }
 }
