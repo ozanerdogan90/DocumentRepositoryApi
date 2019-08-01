@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using DocumentRepositoryApi.DataAccess.Repositories;
 using DocumentRepositoryApi.Models;
@@ -18,29 +19,41 @@ namespace DocumentRepositoryApi.Controllers
             _service = service;
         }
 
+        //// TODO: not guid id 
         [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
+        public async Task<IActionResult> Get([BindRequired]Guid id)
         {
-            return "value";
+            var doc = await _service.Get(id);
+            if (doc == null)
+                return NotFound();
+
+            return Ok(doc);
         }
 
         [HttpPost]
         public async Task<IActionResult> Post([BindRequired, FromBody] Document document)
         {
-            var id= await _service.Add(document);
+            var id = await _service.Add(document);
             return Created("", id);
         }
 
-        // PUT: api/Document/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<IActionResult> Put([BindRequired]Guid id, [BindRequired, FromBody] Document document)
         {
+            var doc = await _service.Get(id);
+            if (doc == null)
+                return NotFound();
+
+            await _service.Update(id, document);
+
+            return Ok();
         }
 
-        // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult> Delete([BindRequired]Guid id)
         {
+            await _service.Delete(id);
+            return Ok();
         }
     }
 }
