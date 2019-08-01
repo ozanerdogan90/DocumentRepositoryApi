@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using DocumentRepositoryApi.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
+using DocumentRepositoryApi.DataAccess;
+using AutoMapper;
+using DocumentRepositoryApi.DataAccess.Repositories;
 
 namespace DocumentRepositoryApi
 {
@@ -24,13 +24,21 @@ namespace DocumentRepositoryApi
             Configuration = builder.Build();
         }
 
-        public IConfiguration Configuration { get; }
+        public IConfigurationRoot Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            Mapper.Initialize(cfg =>
+            {
+                cfg.AddProfile<AutoMapperProfile>();
+            });
+
             services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IDocumentContentService, DocumentContentService>();
+
+            services.AddTransient<IDocumentRepository, DocumentRepository>();
+            ConfigureDatabase(services, Configuration);
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
@@ -43,6 +51,13 @@ namespace DocumentRepositoryApi
             }
 
             app.UseMvc();
+        }
+
+        public virtual void ConfigureDatabase(IServiceCollection services, IConfigurationRoot config)
+        {
+            var dbName = config.GetValue<string>("Database:InMemoryDb:Name", "DocumentRepository");
+            services.AddDbContext<DocumentContext>(options =>
+             options.UseInMemoryDatabase(dbName));
         }
     }
 }

@@ -40,6 +40,13 @@ namespace DocumentRepositoryApi.IntegrationTests.Controllers
         }
 
         [Fact]
+        public async Task Post_WhenSuccessfulyInserted_ThenCreatesEntity()
+        {
+            var expected = await httpClient.PostAsJsonAsync<Document>("/documents", DocumentHelper.ValidDocument);
+            expected.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+        }
+
+        [Fact]
         public async Task Put_WhenEmptyPayloadSent_ThenThrowsError()
         {
             var expected = await httpClient.PutAsJsonAsync<Document>($"/documents/{Guid.NewGuid()}", null);

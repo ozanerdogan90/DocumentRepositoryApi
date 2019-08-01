@@ -1,8 +1,10 @@
-﻿using DocumentRepositoryApi.Models;
+﻿using AutoMapper;
+using DocumentRepositoryApi.DataAccess.Repositories;
+using DocumentRepositoryApi.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using DocumentEntity = DocumentRepositoryApi.DataAccess.Entities.Document;
 
 namespace DocumentRepositoryApi.Services
 {
@@ -10,36 +12,48 @@ namespace DocumentRepositoryApi.Services
     {
         Task<Guid> Add(Document document);
         Task<Document> Get(Guid id);
-        Task<List<Document>> GetAll();
+        Task<List<Document>> GetAll(string owner = "");
         Task<bool> Update(Guid id, Document document);
         Task<bool> Delete(Guid id);
     }
 
     public class DocumentService : IDocumentService
     {
-        public Task<Guid> Add(Document document)
+        private readonly IDocumentRepository _repo;
+        public DocumentService(IDocumentRepository repo)
         {
-            throw new NotImplementedException();
+            _repo = repo;
         }
 
-        public Task<bool> Delete(Guid id)
+
+        public async Task<Guid> Add(Document document)
         {
-            throw new NotImplementedException();
+            var entity = Mapper.Map<DocumentEntity>(document);
+            return await _repo.Add(entity);
         }
 
-        public Task<Document> Get(Guid id)
+        public async Task<bool> Delete(Guid id)
         {
-            throw new NotImplementedException();
+            return await _repo.Delete(id);
         }
 
-        public Task<List<Document>> GetAll()
+        public async Task<Document> Get(Guid id)
         {
-            throw new NotImplementedException();
+            var entity = await _repo.Get(id);
+            return Mapper.Map<Document>(entity);
         }
 
-        public Task<bool> Update(Guid id, Document document)
+        public async Task<List<Document>> GetAll(string owner = "")
         {
-            throw new NotImplementedException();
+            var entities = await _repo.GetAll(owner);
+            return Mapper.Map<List<Document>>(entities);
+        }
+
+        public async Task<bool> Update(Guid id, Document document)
+        {
+            var entity = Mapper.Map<DocumentEntity>(document);
+            entity.Id = id;
+            return await _repo.Update(entity);
         }
     }
 }
