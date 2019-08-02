@@ -36,6 +36,8 @@ namespace DocumentRepositoryApi
          .SetBasePath(env.ContentRootPath)
          .AddJsonFile("appsettings.json");
 
+            builder.AddUserSecrets<Startup>();
+
             Configuration = builder.Build();
         }
 
