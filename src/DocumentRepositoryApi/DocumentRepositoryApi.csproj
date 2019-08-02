@@ -5,6 +5,10 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\externalRepos\DocumentRepositoryApi\src\DocumentRepositoryApi\DocumentRepositoryApi.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
@@ -12,11 +16,14 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="8.1.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="6.1.1" />
+    <PackageReference Include="CorrelationId" Version="2.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
     <PackageReference Include="Ben.Demystifier" Version="0.1.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.1.1" />
+    <PackageReference Include="Microsoft.OpenApi" Version="1.1.3" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.9" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
   </ItemGroup>
 
   <ItemGroup>

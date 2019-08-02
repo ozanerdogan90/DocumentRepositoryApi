@@ -11,6 +11,10 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace DocumentRepositoryApi.Controllers
 {
+    /// <summary>
+    /// Document controller
+    /// </summary>
+    [Produces("application/json")]
     [Route("documents")]
     [ApiController]
     [Authorize]
@@ -22,6 +26,15 @@ namespace DocumentRepositoryApi.Controllers
             _service = service;
         }
 
+        /// <summary>
+        /// Get document by id
+        /// </summary>
+        /// <remarks></remarks>
+        /// <returns>Document model</returns>
+        /// <param name="id"></param>
+        /// <response code="200">If operation is completed successfuly</response>
+        /// <response code="400">If document doesnt exist</response>  
+        /// <response code="500">If something goes wrong</response>  
         [HttpGet("{id}", Name = "Get")]
         public async Task<IActionResult> Get([NotEmptyGuid]Guid id)
         {
@@ -32,6 +45,14 @@ namespace DocumentRepositoryApi.Controllers
             return Ok(doc);
         }
 
+        /// <summary>
+        /// Creates a new document
+        /// </summary>
+        /// <remarks></remarks>
+        /// <returns>Document link</returns>
+        /// <param name="document"></param>
+        /// <response code="201">If operation is completed successfuly</response>
+        /// <response code="500">If something goes wrong</response>  
         //// todo hal doc
         [HttpPost]
         public async Task<IActionResult> Post([BindRequired, FromBody] Document document)
@@ -40,6 +61,16 @@ namespace DocumentRepositoryApi.Controllers
             return CreatedAtAction(nameof(Get), new { id }, id);
         }
 
+        /// <summary>
+        /// Modify the existing document
+        /// </summary>
+        /// <remarks></remarks>
+        /// <returns>Document model</returns>
+        /// <param name="id"></param>
+        /// <param name="document"></param>
+        /// <response code="200">If operation is completed successfuly</response>
+        /// <response code="400">If document doesnt exist</response>  
+        /// <response code="500">If something goes wrong</response>  
         [HttpPut("{id}")]
         public async Task<IActionResult> Put([NotEmptyGuid]Guid id, [BindRequired, FromBody] Document document)
         {
@@ -54,6 +85,13 @@ namespace DocumentRepositoryApi.Controllers
             return Ok(document);
         }
 
+        /// <summary>
+        /// Delete existing document
+        /// </summary>
+        /// <remarks></remarks>
+        /// <param name="id"></param>
+        /// <response code="200">If operation is completed successfuly</response>
+        /// <response code="500">If something goes wrong</response>  
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([NotEmptyGuid]Guid id)
         {
