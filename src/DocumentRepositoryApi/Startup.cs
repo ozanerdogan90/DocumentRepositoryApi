@@ -24,6 +24,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using Microsoft.Extensions.Logging;
 using DocumentRepositoryApi.Middlewares;
+using Hellang.Middleware.ProblemDetails;
 
 namespace DocumentRepositoryApi
 {
@@ -92,7 +93,8 @@ namespace DocumentRepositoryApi
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddProblemDetails();
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
         }
 
@@ -119,7 +121,7 @@ namespace DocumentRepositoryApi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory builder)
         {
             if (env.IsDevelopment())
             {
@@ -132,7 +134,7 @@ namespace DocumentRepositoryApi
                             .AllowAnyHeader());
 
             app.UseAuthentication();
-            loggerFactory.AddConsole();
+            builder.AddConsole();
             app.UseMiddleware<ApiLoggingMiddleware>();
             app.UseCorrelationId(new CorrelationIdOptions
             {
@@ -155,7 +157,7 @@ namespace DocumentRepositoryApi
             });
 
 
-
+            app.UseProblemDetails();
             app.UseMvc();
         }
 
