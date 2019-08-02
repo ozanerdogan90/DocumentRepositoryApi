@@ -22,6 +22,8 @@ using System.Reflection;
 using System.IO;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using Microsoft.Extensions.Logging;
+using DocumentRepositoryApi.Middlewares;
 
 namespace DocumentRepositoryApi
 {
@@ -117,7 +119,7 @@ namespace DocumentRepositoryApi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -130,11 +132,14 @@ namespace DocumentRepositoryApi
                             .AllowAnyHeader());
 
             app.UseAuthentication();
+            loggerFactory.AddConsole();
+            app.UseMiddleware<ApiLoggingMiddleware>();
             app.UseCorrelationId(new CorrelationIdOptions
             {
                 Header = "X-Correlation-ID",
                 UseGuidForCorrelationId = true,
-                UpdateTraceIdentifier = false
+                UpdateTraceIdentifier = true,
+                IncludeInResponse = true
             });
 
 
@@ -148,6 +153,8 @@ namespace DocumentRepositoryApi
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Document Repository v1");
                 c.DocumentTitle = "Document Repository Swagger Ui";
             });
+
+
 
             app.UseMvc();
         }

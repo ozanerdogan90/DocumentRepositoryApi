@@ -3,6 +3,7 @@ using DocumentRepositoryApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -19,6 +20,7 @@ namespace DocumentRepositoryApi.Controllers
     {
         private readonly IAuthService _service;
         private readonly IUserService _userService;
+
         public AuthController(IAuthService service, IUserService userService)
         {
             _service = service;

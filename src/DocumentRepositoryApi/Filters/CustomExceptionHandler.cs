@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using Microsoft.Extensions.Logging;
 
 namespace DocumentRepositoryApi.Filters
 {
@@ -16,13 +13,16 @@ namespace DocumentRepositoryApi.Filters
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IModelMetadataProvider _modelMetadataProvider;
 
+        private readonly ILogger<CustomExceptionFilter> _logger;
 
         public CustomExceptionFilter(
                 IHostingEnvironment hostingEnvironment,
-                IModelMetadataProvider modelMetadataProvider)
+                IModelMetadataProvider modelMetadataProvider,
+                ILogger<CustomExceptionFilter> logger)
         {
             _hostingEnvironment = hostingEnvironment;
             _modelMetadataProvider = modelMetadataProvider;
+            _logger = logger;
         }
 
         public override void OnException(ExceptionContext context)
@@ -45,6 +45,8 @@ namespace DocumentRepositoryApi.Filters
                 };
             }
 
+            var correlationId = context.HttpContext.Items["X-Correlation-Id"]?.ToString();
+            _logger.LogError(exception, exception.Message, correlationId);
             context.Result = new ObjectResult(error)
             { StatusCode = (int)HttpStatusCode.InternalServerError };
         }
