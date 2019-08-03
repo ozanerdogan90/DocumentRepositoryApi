@@ -1,0 +1,37 @@
+version: '3'
+services:
+  db:
+    image: postgres::latest
+    container_name: document-api-db
+    ports:
+      - 5432:5432
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_INITDB_ARGS: '--encoding=UTF8'
+  pg_admin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin4
+    ports:
+      - 15432:80
+    environment:
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+    depends_on:
+      - db
+  api:
+    build:
+      context: .
+    container_name: document-api
+    ports:
+      - 5001:5001
+    restart: on-failure
+    environment:
+      - ASPNETCORE_URLS=http://+:5001
+      - USER_SECRETS_ID=8c43a081-db6b-43eb-8376-df1651b2d72a
+    volumes:
+      - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID:/root/.microsoft/usersecrets/$USER_SECRETS_ID
+    depends_on:
+      - db
