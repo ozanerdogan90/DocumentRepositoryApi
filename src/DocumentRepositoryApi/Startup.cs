@@ -25,6 +25,9 @@ using Swashbuckle.AspNetCore.SwaggerUI;
 using Microsoft.Extensions.Logging;
 using DocumentRepositoryApi.Middlewares;
 using Hellang.Middleware.ProblemDetails;
+using Amazon.Runtime;
+using Amazon.S3;
+using Amazon;
 
 namespace DocumentRepositoryApi
 {
@@ -170,6 +173,14 @@ namespace DocumentRepositoryApi
                 cfg.AddProfile<AutoMapperProfile>();
             });
 
+        }
+
+        private void RegisterAmazonS3Services(IServiceCollection services)
+        {
+            var credential = new BasicAWSCredentials(Configuration.GetValue<string>("AWS:Credentials:AccessKey"), Configuration.GetValue<string>("AWS:Credentials:SecretKey"));
+            var regionSystemName = Configuration.GetValue<string>("AWS:Region", RegionEndpoint.EUWest3.SystemName);
+            var client = new AmazonS3Client(credential, RegionEndpoint.GetBySystemName(regionSystemName));
+            services.AddSingleton<IAmazonS3>(client);
         }
 
         public virtual void ConfigureDatabase(IServiceCollection services, IConfiguration config)

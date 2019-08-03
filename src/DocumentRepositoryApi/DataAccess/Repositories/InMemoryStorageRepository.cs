@@ -23,6 +23,11 @@ namespace DocumentRepositoryApi.DataAccess.Repositories
             return null;
         }
 
+        public async Task RemoveAsync(Guid id)
+        {
+            fileDictionary.Remove(id);
+        }
+
         public async Task<bool> Store(DocumentContent content)
         {
             return fileDictionary.TryAdd(content.DocumentId, content);

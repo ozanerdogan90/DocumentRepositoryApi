@@ -8,5 +8,6 @@ namespace DocumentRepositoryApi.DataAccess.Repositories
     {
         Task<bool> Store(DocumentContent content);
         Task<DocumentContent> Fetch(Guid id);
+        Task RemoveAsync(Guid id);
     }
 }
