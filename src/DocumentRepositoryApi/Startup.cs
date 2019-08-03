@@ -75,9 +75,8 @@ namespace DocumentRepositoryApi
 
         public virtual void ConfigureDatabase(IServiceCollection services, IConfiguration config)
         {
-            var dbName = config.GetValue<string>("Database:InMemoryDb:Name", "DocumentRepository");
             services.AddDbContext<DocumentContext>(options =>
-             options.UseInMemoryDatabase(dbName));
+            options.UseNpgsql(Configuration.GetConnectionString("PostgreSql")));
         }
 
         public virtual void ConfigureAuth(IServiceCollection services)
