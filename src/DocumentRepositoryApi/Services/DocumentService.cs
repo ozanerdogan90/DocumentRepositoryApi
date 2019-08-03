@@ -20,10 +20,12 @@ namespace DocumentRepositoryApi.Services
     public class DocumentService : IDocumentService
     {
         private readonly IDocumentRepository _repo;
+        private readonly IDocumentContentRepository _contentRepository;
         private readonly IMapper _mapper;
-        public DocumentService(IDocumentRepository repo, IMapper mapper)
+        public DocumentService(IDocumentRepository repo, IDocumentContentRepository contentRepository, IMapper mapper)
         {
             _repo = repo;
+            _contentRepository = contentRepository;
             _mapper = mapper;
         }
 
@@ -36,6 +38,7 @@ namespace DocumentRepositoryApi.Services
 
         public async Task<bool> Delete(Guid id)
         {
+            await _contentRepository.RemoveAsync(id);
             return await _repo.Delete(id);
         }
 

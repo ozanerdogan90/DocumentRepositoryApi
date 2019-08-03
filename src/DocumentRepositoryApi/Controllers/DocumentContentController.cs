@@ -3,16 +3,14 @@ using DocumentRepositoryApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
-using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 
 namespace DocumentRepositoryApi.Controllers
 {
     /// <summary>
-    /// Document Content controller to add new files
+    /// Document Content Controller to add new files
     /// </summary>
     [Produces("application/json")]
     [Route("documents/{documentId}/contents")]

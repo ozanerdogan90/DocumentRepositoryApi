@@ -1,12 +1,17 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace DocumentRepositoryApi.Services
+namespace DocumentRepositoryApi.Services.Helpers
 {
+    public interface IEncryptionService
+    {
+        string Encrypt(string input);
+        byte[] Encrypt(byte[] input);
+        string Decrypt(string cipherText);
+        byte[] Decrypt(byte[] cipherText);
+    }
+
     public class EncryptionService : IEncryptionService
     {
         private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -15,7 +20,7 @@ namespace DocumentRepositoryApi.Services
         public EncryptionService(IDataProtectionProvider dataProtectionProvider, IConfiguration config)
         {
             _dataProtectionProvider = dataProtectionProvider;
-            _key = config.GetValue<string>("Encryption:Key", "cxz92k13md8f981hu6y7alkc");
+            _key = config["Encryption:Key"] ?? throw new ArgumentNullException("EncryptionKey");
         }
 
         public string Encrypt(string input)

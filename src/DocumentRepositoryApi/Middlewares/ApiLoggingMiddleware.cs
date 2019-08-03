@@ -93,7 +93,6 @@ namespace DocumentRepositoryApi.Middlewares
             {
                 var readChunk = new char[ReadChunkBufferLength];
                 int readChunkLength;
-                //do while: is useful for the last iteration in case readChunkLength < chunkLength
                 do
                 {
                     readChunkLength = reader.ReadBlock(readChunk, 0, ReadChunkBufferLength);

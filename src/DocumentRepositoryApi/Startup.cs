@@ -1,31 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using DocumentRepositoryApi.Services;
+﻿using DocumentRepositoryApi.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using DocumentRepositoryApi.DataAccess;
-using AutoMapper;
-using DocumentRepositoryApi.DataAccess.Repositories;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
-using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using CorrelationId;
-using System.Reflection;
-using System.IO;
-using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.Extensions.Logging;
 using DocumentRepositoryApi.Middlewares;
 using Hellang.Middleware.ProblemDetails;
-using Amazon.Runtime;
-using Amazon.S3;
-using Amazon;
+using System;
 
 namespace DocumentRepositoryApi
 {
@@ -44,68 +31,58 @@ namespace DocumentRepositoryApi
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddDataProtection()
-                        .UseCryptographicAlgorithms(
-                        new AuthenticatedEncryptorConfiguration()
-                        {
-                            EncryptionAlgorithm = EncryptionAlgorithm.AES_256_CBC,
-                            ValidationAlgorithm = ValidationAlgorithm.HMACSHA256
-                        });
-            services.AddTransient<IDocumentService, DocumentService>();
-            services.AddTransient<IDocumentContentService, DocumentContentService>();
-
-            services.AddScoped<IDocumentRepository, DocumentRepository>();
-            services.AddSingleton<IDocumentContentRepository, InMemoryStorageRepository>();
-            services.AddScoped<IUserRepository, UserRepository>();
-            services.AddTransient<ICompressionService, CompressionService>();
-            services.AddTransient<IEncryptionService, EncryptionService>();
-
-            services.AddTransient<IUserService, UserService>();
-            services.AddTransient<IAuthService, AuthService>();
             ConfigureDatabase(services, Configuration);
-            services.AddSingleton(Configuration);
-            services.AddCorrelationId();
-            InitializeMapper(services);
-
             ConfigureAuth(services);
-            services.AddSwaggerGen(c =>
+            services.AddBusinessServices()
+                    .AddRepositories(Configuration)
+                    .AddApplicationServices(Configuration);
+        }
+
+
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory builder)
+        {
+            if (env.IsDevelopment())
             {
-                c.SwaggerDoc("v1", new Info
+                app.UseDeveloperExceptionPage();
+            }
+            builder.AddConsole();
+            app.UseCors(x => x
+                            .AllowAnyOrigin()
+                            .AllowAnyMethod()
+                            .AllowAnyHeader())
+                .UseAuthentication()
+                .UseMiddleware<ApiLoggingMiddleware>()
+                .UseCorrelationId(new CorrelationIdOptions
                 {
-                    Version = "v1",
-                    Title = "Document Repository Api",
-                    Description = "A simple api to store your documents",
-                });
-                var security = new Dictionary<string, IEnumerable<string>>
-                {
-                    {"Bearer", new string[] { }},
-                };
+                    Header = "X-Correlation-ID",
+                    UseGuidForCorrelationId = true,
+                    UpdateTraceIdentifier = true,
+                    IncludeInResponse = true
+                })
+                .UseSwagger()
+                .UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Document Repository v1");
+                c.DocumentTitle = "Document Repository Swagger Ui";
+            })
+                .UseResponseCompression()
+                .UseProblemDetails()
+                .UseMvc();
+        }
 
-                c.AddSecurityDefinition("Bearer", new ApiKeyScheme
-                {
-                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-                    Name = "Authorization",
-                    In = "header",
-                    Type = "apiKey"
-                });
-                c.AddSecurityRequirement(security);
-                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                c.IncludeXmlComments(xmlPath);
-            });
-            services.AddResponseCompression();
-            services.AddProblemDetails();
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-
+        public virtual void ConfigureDatabase(IServiceCollection services, IConfiguration config)
+        {
+            var dbName = config.GetValue<string>("Database:InMemoryDb:Name", "DocumentRepository");
+            services.AddDbContext<DocumentContext>(options =>
+             options.UseInMemoryDatabase(dbName));
         }
 
         public virtual void ConfigureAuth(IServiceCollection services)
         {
-            var key = Encoding.ASCII.GetBytes(Configuration.GetValue<string>("Jwt:Secret"));
+            var key = Configuration["Jwt:Secret"] ?? throw new ArgumentNullException("JwtSecret");
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -118,79 +95,11 @@ namespace DocumentRepositoryApi
          x.TokenValidationParameters = new TokenValidationParameters
          {
              ValidateIssuerSigningKey = true,
-             IssuerSigningKey = new SymmetricSecurityKey(key),
+             IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)),
              ValidateIssuer = false,
              ValidateAudience = false
          };
      });
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory builder)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            //InitializeMapper();
-            app.UseCors(x => x
-                            .AllowAnyOrigin()
-                            .AllowAnyMethod()
-                            .AllowAnyHeader());
-
-            app.UseAuthentication();
-            builder.AddConsole();
-            app.UseMiddleware<ApiLoggingMiddleware>();
-            app.UseCorrelationId(new CorrelationIdOptions
-            {
-                Header = "X-Correlation-ID",
-                UseGuidForCorrelationId = true,
-                UpdateTraceIdentifier = true,
-                IncludeInResponse = true
-            });
-
-
-            // Enable middleware to serve generated Swagger as a JSON endpoint.
-            app.UseSwagger();
-
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
-            // specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Document Repository v1");
-                c.DocumentTitle = "Document Repository Swagger Ui";
-            });
-
-            app.UseResponseCompression();
-            app.UseProblemDetails();
-            app.UseMvc();
-        }
-
-        public IServiceCollection InitializeMapper(IServiceCollection services)
-        {
-            var mappingConfig = new MapperConfiguration(mc =>
-            {
-                mc.AddProfile(new AutoMapperProfile());
-            });
-
-            IMapper mapper = mappingConfig.CreateMapper();
-            services.AddSingleton(mapper);
-            return services;
-        }
-
-        private void RegisterAmazonS3Services(IServiceCollection services)
-        {
-            var credential = new BasicAWSCredentials(Configuration.GetValue<string>("AWS:Credentials:AccessKey"), Configuration.GetValue<string>("AWS:Credentials:SecretKey"));
-            var regionSystemName = Configuration.GetValue<string>("AWS:Region", RegionEndpoint.EUWest3.SystemName);
-            var client = new AmazonS3Client(credential, RegionEndpoint.GetBySystemName(regionSystemName));
-            services.AddSingleton<IAmazonS3>(client);
-        }
-
-        public virtual void ConfigureDatabase(IServiceCollection services, IConfiguration config)
-        {
-            var dbName = config.GetValue<string>("Database:InMemoryDb:Name", "DocumentRepository");
-            services.AddDbContext<DocumentContext>(options =>
-             options.UseInMemoryDatabase(dbName));
         }
     }
 }

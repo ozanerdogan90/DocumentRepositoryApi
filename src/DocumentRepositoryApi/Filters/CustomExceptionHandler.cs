@@ -45,7 +45,7 @@ namespace DocumentRepositoryApi.Filters
                 };
             }
 
-            var correlationId = context.HttpContext.Items["X-Correlation-Id"]?.ToString();
+            var correlationId = context.HttpContext.TraceIdentifier;
             _logger.LogError(exception, exception.Message, correlationId);
             context.Result = new ObjectResult(error)
             { StatusCode = (int)HttpStatusCode.InternalServerError };

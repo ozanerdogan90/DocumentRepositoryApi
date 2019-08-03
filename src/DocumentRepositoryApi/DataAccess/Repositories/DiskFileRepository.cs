@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace DocumentRepositoryApi.DataAccess.Repositories
@@ -31,9 +29,9 @@ namespace DocumentRepositoryApi.DataAccess.Repositories
         {
             var filePath = GetFilePath(id);
 
-            if (System.IO.File.Exists(filePath))
+            if (File.Exists(filePath))
             {
-                return JsonConvert.DeserializeObject<DocumentContent>(await System.IO.File.ReadAllTextAsync(filePath));
+                return JsonConvert.DeserializeObject<DocumentContent>(await File.ReadAllTextAsync(filePath));
             }
             else
             {
@@ -43,18 +41,18 @@ namespace DocumentRepositoryApi.DataAccess.Repositories
 
         public async Task RemoveAsync(Guid id)
         {
-            System.IO.File.Delete(GetFilePath(id));
+            File.Delete(GetFilePath(id));
         }
 
         public async Task<bool> Store(DocumentContent content)
         {
-            await System.IO.File.WriteAllTextAsync(GetFilePath(content.DocumentId), JsonConvert.SerializeObject(content));
+            await File.WriteAllTextAsync(GetFilePath(content.DocumentId), JsonConvert.SerializeObject(content));
             return true;
         }
 
         private string GetFilePath(Guid identifier)
         {
-            return System.IO.Path.Combine(_repositoryFolder, identifier.ToString());
+            return Path.Combine(_repositoryFolder, identifier.ToString());
         }
 
         private string GetRouteParentPath(string path, int depth = 0)
@@ -65,7 +63,7 @@ namespace DocumentRepositoryApi.DataAccess.Repositories
             depth++;
             var parent = Directory.GetParent(path);
             if (parent != null)
-                return GetRouteParentPath(parent.FullName, depth++);
+                return GetRouteParentPath(parent.FullName, depth);
 
             return path;
         }

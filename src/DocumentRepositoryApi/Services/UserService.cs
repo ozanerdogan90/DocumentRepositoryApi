@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DocumentRepositoryApi.DataAccess.Repositories;
 using DocumentRepositoryApi.Models;
+using DocumentRepositoryApi.Services.Helpers;
 using System.Threading.Tasks;
 
 namespace DocumentRepositoryApi.Services

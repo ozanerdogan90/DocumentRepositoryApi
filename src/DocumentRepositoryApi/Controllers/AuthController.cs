@@ -3,7 +3,6 @@ using DocumentRepositoryApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -11,19 +10,19 @@ namespace DocumentRepositoryApi.Controllers
 {
 
     /// <summary>
-    /// Auth Controller to generate token and register user
+    /// Auth Controller to generate a new token and register user
     /// </summary>
     [ApiController]
     [AllowAnonymous]
     [Produces("application/json")]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthService _service;
+        private readonly IAuthService _authService;
         private readonly IUserService _userService;
 
-        public AuthController(IAuthService service, IUserService userService)
+        public AuthController(IAuthService authService, IUserService userService)
         {
-            _service = service;
+            _authService = authService;
             _userService = userService;
         }
 
@@ -37,9 +36,9 @@ namespace DocumentRepositoryApi.Controllers
         /// <response code="400">If the credential is not granted</response>  
         /// <response code="500">If something goes wrong</response>  
         [HttpPost("token")]
-        public async Task<IActionResult> Generate([BindRequired, FromBody]Login loginModel)
+        public async Task<IActionResult> GenerateToken([BindRequired, FromBody]Login loginModel)
         {
-            var token = await _service.GenerateToken(loginModel.Email, loginModel.Password);
+            var token = await _authService.GenerateToken(loginModel.Email, loginModel.Password);
             if (string.IsNullOrEmpty(token))
                 return BadRequest();
 

@@ -1,10 +1,9 @@
 ﻿using DocumentRepositoryApi.DataAccess.Repositories;
 using DocumentRepositoryApi.Models;
+using DocumentRepositoryApi.Services.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.StaticFiles;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using DocumentContentEntity = DocumentRepositoryApi.DataAccess.Entities.DocumentContent;
 
@@ -58,7 +57,6 @@ namespace DocumentRepositoryApi.Services
             };
 
             return await _repo.Store(documentContent);
-
         }
     }
 }

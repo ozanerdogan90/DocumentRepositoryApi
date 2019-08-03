@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Amazon.S3;
 using Amazon.S3.Model;
@@ -18,8 +16,8 @@ namespace DocumentRepositoryApi.DataAccess.Repositories
 
         public AmazonS3FileRepository(IAmazonS3 client, IConfiguration config)
         {
-            _client = client;
-            _bucketName = config.GetValue<string>("AWS:BucketName");
+            _client = client ?? throw new ArgumentNullException(nameof(client));
+            _bucketName = config["AWS:BucketName"] ?? throw new ArgumentNullException(nameof(_bucketName));
         }
 
         public async Task<DocumentContent> Fetch(Guid id)
