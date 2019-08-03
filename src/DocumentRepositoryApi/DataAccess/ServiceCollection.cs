@@ -50,7 +50,7 @@ namespace DocumentRepositoryApi.DataAccess
 
         private static void RegisterAmazonS3Services(IServiceCollection services, IConfiguration configuration)
         {
-            var accessKey = configuration["AWS:Credentials:AccessKey"] ?? throw new ArgumentNullException("AwsAccessKey");
+            var accessKey = configuration["AWS:Credentials:AccessKey"] ?? throw new ArgumentNullException("AWSAccessKey");
             var secretKey = configuration["AWS:Credentials:SecretKey"] ?? throw new ArgumentNullException("AWSSecretKey");
             var region = configuration["AWS:Region"] ?? throw new ArgumentNullException("AWSRegion");
 
