@@ -13,7 +13,7 @@ using Xunit;
 namespace DocumentRepositoryApi.IntegrationTests.Controllers
 {
 
-    public class AuthControllerTests : IDisposable
+    public class AuthControllerTests
     {
         private readonly HttpClient httpClient;
         private readonly TestServer server;
@@ -24,11 +24,7 @@ namespace DocumentRepositoryApi.IntegrationTests.Controllers
 
             httpClient = server.CreateClient();
         }
-        public void Dispose()
-        {
-            AutoMapper.Mapper.Reset();
-        }
-
+   
         [Fact]
         public async Task Register_WhenRegistered_ReturnsOk()
         {

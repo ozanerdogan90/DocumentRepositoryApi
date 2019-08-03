@@ -17,11 +17,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using CorrelationId;
-using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.IO;
 using Swashbuckle.AspNetCore.Swagger;
-using Swashbuckle.AspNetCore.SwaggerUI;
 using Microsoft.Extensions.Logging;
 using DocumentRepositoryApi.Middlewares;
 using Hellang.Middleware.ProblemDetails;
@@ -61,7 +59,7 @@ namespace DocumentRepositoryApi
             services.AddTransient<IDocumentContentService, DocumentContentService>();
 
             services.AddScoped<IDocumentRepository, DocumentRepository>();
-            services.AddScoped<IDocumentContentRepository, InMemoryStorageRepository>();
+            services.AddSingleton<IDocumentContentRepository, InMemoryStorageRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddTransient<ICompressionService, CompressionService>();
             services.AddTransient<IEncryptionService, EncryptionService>();
@@ -71,6 +69,7 @@ namespace DocumentRepositoryApi
             ConfigureDatabase(services, Configuration);
             services.AddSingleton(Configuration);
             services.AddCorrelationId();
+            InitializeMapper(services);
 
             ConfigureAuth(services);
             services.AddSwaggerGen(c =>
@@ -98,6 +97,7 @@ namespace DocumentRepositoryApi
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
+            services.AddResponseCompression();
             services.AddProblemDetails();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
@@ -132,7 +132,7 @@ namespace DocumentRepositoryApi
             {
                 app.UseDeveloperExceptionPage();
             }
-            InitializeMapper();
+            //InitializeMapper();
             app.UseCors(x => x
                             .AllowAnyOrigin()
                             .AllowAnyMethod()
@@ -161,18 +161,21 @@ namespace DocumentRepositoryApi
                 c.DocumentTitle = "Document Repository Swagger Ui";
             });
 
-
+            app.UseResponseCompression();
             app.UseProblemDetails();
             app.UseMvc();
         }
 
-        public void InitializeMapper()
+        public IServiceCollection InitializeMapper(IServiceCollection services)
         {
-            Mapper.Initialize(cfg =>
+            var mappingConfig = new MapperConfiguration(mc =>
             {
-                cfg.AddProfile<AutoMapperProfile>();
+                mc.AddProfile(new AutoMapperProfile());
             });
 
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
+            return services;
         }
 
         private void RegisterAmazonS3Services(IServiceCollection services)

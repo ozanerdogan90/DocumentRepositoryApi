@@ -13,7 +13,7 @@ using Xunit;
 
 namespace DocumentRepositoryApi.IntegrationTests.Controllers
 {
-    public class DocumentContentControllerTests : IDisposable
+    public class DocumentContentControllerTests
     {
         private readonly HttpClient httpClient;
         private readonly TestServer server;
@@ -25,20 +25,15 @@ namespace DocumentRepositoryApi.IntegrationTests.Controllers
             httpClient = server.CreateClient();
         }
 
-        public void Dispose()
-        {
-            AutoMapper.Mapper.Reset();
-        }
-
         [Fact]
-        public async Task Get_WhenDocumentDoesntExist_ThenReturnesNotFound()
+        public async Task Get_WhenDocumentDoesntExist_ThenReturnsNotFound()
         {
             var expected = await httpClient.GetAsync($"/documents/{Guid.NewGuid()}");
             expected.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
         }
 
         [Fact]
-        public async Task Get_WhenDocumentExist_ThenReturnesContent()
+        public async Task Get_WhenDocumentExist_ThenReturnsContent()
         {
             var id = await AddNewDocument();
             await AddNewContent(id);
@@ -47,7 +42,7 @@ namespace DocumentRepositoryApi.IntegrationTests.Controllers
         }
 
         [Fact]
-        public async Task Post_WhenDocumentDoesntExist_ThenReturnesBadRequest()
+        public async Task Post_WhenDocumentDoesntExist_ThenReturnsBadRequest()
         {
             var expected = await httpClient.PostAsync($"/documents/{Guid.NewGuid()}/contents", FormDataHelper.FormData);
             expected.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);

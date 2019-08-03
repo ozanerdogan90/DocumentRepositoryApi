@@ -20,15 +20,17 @@ namespace DocumentRepositoryApi.Services
     public class DocumentService : IDocumentService
     {
         private readonly IDocumentRepository _repo;
-        public DocumentService(IDocumentRepository repo)
+        private readonly IMapper _mapper;
+        public DocumentService(IDocumentRepository repo, IMapper mapper)
         {
             _repo = repo;
+            _mapper = mapper;
         }
 
 
         public async Task<Guid> Add(Document document)
         {
-            var entity = Mapper.Map<DocumentEntity>(document);
+            var entity = _mapper.Map<DocumentEntity>(document);
             return await _repo.Add(entity);
         }
 
@@ -40,18 +42,18 @@ namespace DocumentRepositoryApi.Services
         public async Task<Document> Get(Guid id)
         {
             var entity = await _repo.Get(id);
-            return Mapper.Map<Document>(entity);
+            return _mapper.Map<Document>(entity);
         }
 
         public async Task<List<Document>> GetAll(string owner = "")
         {
             var entities = await _repo.GetAll(owner);
-            return Mapper.Map<List<Document>>(entities);
+            return _mapper.Map<List<Document>>(entities);
         }
 
         public async Task<bool> Update(Guid id, Document document)
         {
-            var entity = Mapper.Map<DocumentEntity>(document);
+            var entity = _mapper.Map<DocumentEntity>(document);
             entity.Id = id;
             return await _repo.Update(entity);
         }

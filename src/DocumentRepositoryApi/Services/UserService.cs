@@ -1,8 +1,6 @@
-﻿using DocumentRepositoryApi.DataAccess.Repositories;
+﻿using AutoMapper;
+using DocumentRepositoryApi.DataAccess.Repositories;
 using DocumentRepositoryApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace DocumentRepositoryApi.Services
@@ -17,15 +15,17 @@ namespace DocumentRepositoryApi.Services
     {
         private readonly IEncryptionService _encryptionService;
         private readonly IUserRepository _userRepository;
-        public UserService(IEncryptionService encryptionService, IUserRepository userRepository)
+        private readonly IMapper _mapper;
+        public UserService(IEncryptionService encryptionService, IUserRepository userRepository, IMapper mapper)
         {
             _encryptionService = encryptionService;
             _userRepository = userRepository;
+            _mapper = mapper;
         }
 
         public async Task<bool> Register(User user)
         {
-            var userEntity = AutoMapper.Mapper.Map<DataAccess.Entities.User>(user);
+            var userEntity = _mapper.Map<DataAccess.Entities.User>(user);
             userEntity.Password = _encryptionService.Encrypt(user.Password);
 
             return await _userRepository.Add(userEntity);
@@ -37,7 +37,7 @@ namespace DocumentRepositoryApi.Services
             if (userEntity == null)
                 return null;
 
-            var user = AutoMapper.Mapper.Map<User>(userEntity);
+            var user = _mapper.Map<User>(userEntity);
             user.Password = _encryptionService.Decrypt(userEntity.Password);
             return user;
         }
