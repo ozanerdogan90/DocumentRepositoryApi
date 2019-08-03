@@ -40,9 +40,14 @@ namespace DocumentRepositoryApi.Controllers
         {
             var doc = await _documentService.Get(documentId);
             if (doc == null)
-                return NotFound();
+                return BadRequest();
 
             var file = await _contentService.Get(documentId);
+            if (file == null)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+
 
             return File(file.Content, file.ContentType, file.Name);
         }

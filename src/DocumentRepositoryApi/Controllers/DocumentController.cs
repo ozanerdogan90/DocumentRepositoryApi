@@ -53,7 +53,6 @@ namespace DocumentRepositoryApi.Controllers
         /// <param name="document"></param>
         /// <response code="201">If operation is completed successfuly</response>
         /// <response code="500">If something goes wrong</response>  
-        //// todo hal doc
         [HttpPost]
         public async Task<IActionResult> Post([BindRequired, FromBody] Document document)
         {
@@ -76,7 +75,7 @@ namespace DocumentRepositoryApi.Controllers
         {
             var doc = await _service.Get(id);
             if (doc == null)
-                return NotFound();
+                return BadRequest();
 
             var updated = await _service.Update(id, document);
             if (!updated)

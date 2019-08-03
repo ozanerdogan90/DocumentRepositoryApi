@@ -32,6 +32,9 @@ namespace DocumentRepositoryApi.Services
         public async Task<DocumentContent> Get(Guid documentId)
         {
             var result = await _repo.Fetch(documentId);
+            if (result == null)
+                return null;
+
             var decryptedContent = _encryptionService.Decrypt(result.Content);
             return new DocumentContent()
             {

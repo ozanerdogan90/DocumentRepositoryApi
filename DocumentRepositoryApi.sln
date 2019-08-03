@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{69092E42-CA2
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentRepositoryApi", "src\DocumentRepositoryApi\DocumentRepositoryApi.csproj", "{84E8A831-AC55-404B-9490-45529E8C627C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentRepositoryApi.UnitTests", "tests\DocumentRepositoryApi.UnitTests\DocumentRepositoryApi.UnitTests.csproj", "{198DAE92-046D-4729-B440-73B8E27ABA2F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,10 @@ Global
 		{84E8A831-AC55-404B-9490-45529E8C627C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84E8A831-AC55-404B-9490-45529E8C627C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84E8A831-AC55-404B-9490-45529E8C627C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{198DAE92-046D-4729-B440-73B8E27ABA2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{198DAE92-046D-4729-B440-73B8E27ABA2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{198DAE92-046D-4729-B440-73B8E27ABA2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{198DAE92-046D-4729-B440-73B8E27ABA2F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,6 +38,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{8D67C6B9-297E-4F4E-9FE3-15B4635C31E0} = {F32CC2A9-E8C5-4A81-B522-8F94172EB2B7}
 		{84E8A831-AC55-404B-9490-45529E8C627C} = {69092E42-CA2C-4C52-AF69-D7B8C5D530CB}
+		{198DAE92-046D-4729-B440-73B8E27ABA2F} = {F32CC2A9-E8C5-4A81-B522-8F94172EB2B7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2E1337EC-29C7-4F91-8D5D-7A47F3FEC793}
