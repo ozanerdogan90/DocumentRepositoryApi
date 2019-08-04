@@ -3,7 +3,7 @@
 > .Net Core 2.2, PostgreSql, Amazon S3, Xunit, Docker  
 
 ## Description
-This project aims to create a document repository to save file on Amazon S3 or shared disk space or inmemory
+This project aims to create a document repository to save files on Amazon S3 or shared disk space or inmemory
 
 ## Features
 ##### Framework
@@ -65,7 +65,9 @@ scripts/tests.sh
 Keys and the secrets are defined in user secret file. More information can be found [.net core user secrets](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-2.2&tabs=windows)
 This application uses "8c43a081-db6b-43eb-8376-df1651b2d72a" as secret key id.
 
-Application uses PostgreSql as database. Connection string needs to be defined in user secret
+#### *To configure PostgreSql db:
+Application uses PostgreSql to store user information and document metadata (name, title and version).
+Connection string needs to be defined in user secret
 ```bash
 ConnectionStrings": {
     "PostgreSql": "Your connection string"
@@ -114,14 +116,15 @@ user secret:
   }
 ```
 
-#### To configure Compression key hash:
+#### *To configure Compression key hash:
 user secret:
 ```bash
  "Encryption": {
     "Key": "Base64 key"
   }
+```
 
-#### To configure Jwt secret:
+#### *To configure Jwt secret:
 user secret:
 ```bash
  "Jwt": {
