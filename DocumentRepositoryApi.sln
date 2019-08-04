@@ -11,7 +11,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{69092E42-CA2
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentRepositoryApi", "src\DocumentRepositoryApi\DocumentRepositoryApi.csproj", "{84E8A831-AC55-404B-9490-45529E8C627C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentRepositoryApi.UnitTests", "tests\DocumentRepositoryApi.UnitTests\DocumentRepositoryApi.UnitTests.csproj", "{198DAE92-046D-4729-B440-73B8E27ABA2F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentRepositoryApi.UnitTests", "tests\DocumentRepositoryApi.UnitTests\DocumentRepositoryApi.UnitTests.csproj", "{198DAE92-046D-4729-B440-73B8E27ABA2F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solutionItems", "solutionItems", "{2E787075-78CE-49D2-8715-8D6B12C1378E}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.db.yml = docker-compose.db.yml
+		docker-compose.yml = docker-compose.yml
+		Dockerfile = Dockerfile
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
