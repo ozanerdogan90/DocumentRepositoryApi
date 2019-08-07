@@ -16,6 +16,8 @@ This project aims to create a document repository to save files on Amazon S3 or 
 - Xunit
 - Fluent Assertions
 - Moq
+##### Test Coverage
+- MiniCover
 
 ## Requirements
 
@@ -60,6 +62,12 @@ To run unit and integration tests with script:
 ```bash
 scripts/tests.sh
 ```
+
+### Test Coverage
+```bash
+scripts/coverage.sh
+```
+Coverage file can be found in coverage-html/index.html file
 
 ## Set up environment
 Keys and the secrets are defined in user secret file. More information can be found [.net core user secrets](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-2.2&tabs=windows)
