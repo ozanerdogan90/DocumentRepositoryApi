@@ -240,3 +240,7 @@ _Pvt_Extensions
 
 # Intellij-IDEA files (rider IDE)
 .idea
+
+coverage-html
+coverage.hits
+coverage.json
