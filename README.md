@@ -18,6 +18,8 @@ This project aims to create a document repository to save files on Amazon S3 or 
 - Moq
 ##### Test Coverage
 - MiniCover
+##### Monitoring
+- ElasticSearch + Kibana
 
 ## Requirements
 
@@ -138,3 +140,38 @@ user secret:
  "Jwt": {
     "Secret": "this is my custom Secret key for authnetication"
   }
+```
+
+#### To configure Logging:
+To use default console logging
+appsettings.json:
+```bash
+  "Logging": {
+    "LogLevel": {
+      "Default": "Warning"
+    },
+    "Provider": {
+      "Type": "0", //// 0:default,1:ELC+Kibana
+      }
+  },
+```
+
+To use elastic search + kibana
+
+```bash
+cmd > cd DocumentRepositoryApi
+cmd > docker-compose -f docker-compose.elastic.yml up
+```
+
+appsettings.json:
+```bash
+  "Logging": {
+    "LogLevel": {
+      "Default": "Warning"
+    },
+    "Provider": {
+      "Type": "1", //// 0:default,1:ELC+Kibana,
+	  "Uri": "http://localhost:9200"
+      }
+  },
+```

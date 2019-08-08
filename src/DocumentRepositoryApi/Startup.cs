@@ -13,6 +13,9 @@ using Microsoft.Extensions.Logging;
 using DocumentRepositoryApi.Middlewares;
 using Hellang.Middleware.ProblemDetails;
 using System;
+using Serilog;
+using Serilog.Sinks.Elasticsearch;
+using DocumentRepositoryApi.Models;
 
 namespace DocumentRepositoryApi
 {
@@ -48,7 +51,7 @@ namespace DocumentRepositoryApi
             {
                 app.UseDeveloperExceptionPage();
             }
-            builder.AddConsole();
+            AddLoggerServices(builder);
             app.UseCors(x => x
                             .AllowAnyOrigin()
                             .AllowAnyMethod()
@@ -77,6 +80,28 @@ namespace DocumentRepositoryApi
         {
             services.AddDbContext<DocumentContext>(options =>
             options.UseNpgsql(Configuration.GetConnectionString("PostgreSql")));
+        }
+
+        public virtual void AddLoggerServices(ILoggerFactory loggerFactory)
+        {
+            var loggerType = Configuration.GetValue<LoggerType>("Logging:Provider:Type", LoggerType.Default);
+            var elasticUri = Configuration.GetValue<string>("Logging:Provider:Uri", "http://localhost:9200/");
+            if (loggerType == LoggerType.ELC)
+            {
+                Log.Logger = new LoggerConfiguration()
+                                 .Enrich.FromLogContext()
+                                 .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(elasticUri))
+                                 {
+                                     AutoRegisterTemplate = true,
+                                 })
+                                .CreateLogger();
+
+                loggerFactory.AddSerilog();
+            }
+            else
+            {
+                loggerFactory.AddConsole();
+            }
         }
 
         public virtual void ConfigureAuth(IServiceCollection services)
